@@ -332,10 +332,12 @@ class Scaphra:
         nlp,
         name: str,
         phrasemap: dict[str, list[str]],
+        max_space: Optional[int] = None,
         n_process: Optional[int] = None,
     ):
         return Scaphra(
             phrasemap=phrasemap,
             nlp=nlp,
+            max_space=max_space,
             n_process=n_process,
         )

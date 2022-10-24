@@ -29,19 +29,6 @@ phrasemap = {
 }
 
 
-nlp.add_pipe("scaphra", config=dict(phrasemap=phrasemap))
-
-# now the pipeline can be used to process documents.
-# the resulting doc objects now have a .spans property
-# which holds all matches as a dictionary:
-#   - the KEYS of the dict are strings of format "match:KEY:POSITIONS"
-#     where KEY is the key given in the phrasemap
-#     and the POSITIONS are the .-separated token start indexes
-#     (this is just to create unique identifier)
-#   - the VALUES are spacy.tokens.SpanGroup instances which group
-#     a single match with multiple single-token spans
-
-
 def match_and_print(nlp, string):
     doc = nlp(string)
     print("\n", string)
@@ -52,7 +39,50 @@ def match_and_print(nlp, string):
             print(f"    label={span.label_} ({span.start}-{span.end})")
 
 
-match_and_print(nlp, "das will nicht drucken!")
-match_and_print(nlp, "das wird getroffen")
-match_and_print(nlp, "montags druckt die kiste nicht")
-match_and_print(nlp, "der motor will einfach nicht richtig starten")
+def example1():
+    print("\nEXAMPLE 1: scattered phrase matching")
+
+    nlp.add_pipe(
+        "scaphra",
+        config=dict(
+            phrasemap=phrasemap,
+        ),
+    )
+
+    # now the pipeline can be used to process documents.
+    # the resulting doc objects now have a .spans property
+    # which holds all matches as a dictionary:
+    #   - the KEYS of the dict are strings of format "match:KEY:POSITIONS"
+    #     where KEY is the key given in the phrasemap
+    #     and the POSITIONS are the .-separated token start indexes
+    #     (this is just to create unique identifier)
+    #   - the VALUES are spacy.tokens.SpanGroup instances which group
+    #     a single match with multiple single-token spans
+
+    match_and_print(nlp, "das will nicht drucken!")
+    match_and_print(nlp, "das wird getroffen")
+    match_and_print(nlp, "montags druckt die kiste nicht")
+    match_and_print(nlp, "der motor will einfach nicht richtig starten")
+
+
+example1()
+
+
+# max_space
+def example2():
+    print("\nEXAMPLE 2: max_space constraint")
+
+    nlp.remove_pipe("scaphra")
+    nlp.add_pipe(
+        "scaphra",
+        config=dict(
+            phrasemap=phrasemap,
+            max_space=2,
+        ),
+    )
+
+    match_and_print(nlp, "das wird getroffen")
+    match_and_print(nlp, "das wird nicht getroffen")
+
+
+example2()
