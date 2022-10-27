@@ -39,8 +39,11 @@ def match_and_print(nlp, string):
             print(f"    label={span.label_} ({span.start}-{span.end})")
 
 
-def example1():
+def example_vanilla():
     print("\nEXAMPLE 1: scattered phrase matching")
+
+    if "scaphra" in nlp.pipe_names:
+        nlp.remove_pipe("scaphra")
 
     nlp.add_pipe(
         "scaphra",
@@ -65,14 +68,16 @@ def example1():
     match_and_print(nlp, "der motor will einfach nicht richtig starten")
 
 
-example1()
+example_vanilla()
 
 
 # max_space
-def example2():
+def example_max_space():
     print("\nEXAMPLE 2: max_space constraint")
 
-    nlp.remove_pipe("scaphra")
+    if "scaphra" in nlp.pipe_names:
+        nlp.remove_pipe("scaphra")
+
     nlp.add_pipe(
         "scaphra",
         config=dict(
@@ -82,7 +87,38 @@ def example2():
     )
 
     match_and_print(nlp, "das wird getroffen")
-    match_and_print(nlp, "das wird nicht getroffen")
+    match_and_print(nlp, "das wird auch getroffen")
+    # this won't match as there are 2 tokens in between
+    match_and_print(nlp, "das wird aber nicht getroffen")
+    match_and_print(nlp, "das wird auch wirklich nicht getroffen")
 
 
-example2()
+example_max_space()
+
+
+# augment
+def example_augment():
+    print("\nEXAMPLE 3: augment patterns")
+
+    # patterns may be augmented by a custom augment function
+    @spacy.registry.callbacks("scaphra_augment")
+    def augment(pattern: list[str]):
+        if pattern == ["wird", "getroffen"]:
+            a, b = pattern
+            return ((a, b), (b, a))
+
+        return pattern
+
+    if "scaphra" in nlp.pipe_names:
+        nlp.remove_pipe("scaphra")
+
+    nlp.add_pipe(
+        "scaphra",
+        config=dict(phrasemap=phrasemap),
+    )
+
+    match_and_print(nlp, "das wird auch getroffen")
+    match_and_print(nlp, "auch dies getroffen wird")
+
+
+example_augment()

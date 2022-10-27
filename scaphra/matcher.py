@@ -126,6 +126,7 @@ class Scaphra:
 
     """
 
+    nlp: spacy.language.Language
     max_space: Optional[int]  # maximum allowed token distance
     patterns: list[tuple[str]]  # all patterns
     patternmap: dict[tuple[str], int]  # pattern to mention
@@ -135,9 +136,12 @@ class Scaphra:
         phrasemap: dict[str, list[str]],
     ) -> dict[str, list[str]]:
 
-        if not self.augment:
+        regname = "scaphra_augment"
+
+        if regname not in spacy.registry.callbacks.get_all():
             return phrasemap
 
+        augment = spacy.registry.callbacks.get(regname)
         sourcemap = {key: phrases.copy() for key, phrases in phrasemap.items()}
 
         for key, phrase in [
@@ -146,7 +150,9 @@ class Scaphra:
             for phrase in phrases
         ]:
 
-            for augmented in self.augment(phrase):
+            for augmented in augment(phrase):
+                augmented = " ".join(augmented)
+
                 # cannot use sets because of spacy
                 if augmented not in phrasemap[key]:
                     phrasemap[key].append(augmented)
@@ -158,11 +164,10 @@ class Scaphra:
         self,
         phrasemap: dict[str, list[str]],
         nlp,
-        augment: Callable[[tuple[str]], set[tuple[str]]] = None,
         max_space: Optional[int] = None,
         n_process: Optional[int] = None,
     ):
-        self.augment = augment
+        self.nlp = nlp
         self.max_space = max_space
 
         log.info(f"init matcher from {sum(map(len, phrasemap.values()))} phrases")
