@@ -7,15 +7,6 @@ SpaCy component for scattered phrase matching.
 1. Then you need this spaCy component!
 
 
-## Installation
-
-Python 3.9 is required. We recommend miniconda for python version management.
-
-```
-conda create -n scaphra python=3.9
-pip install scaphra
-```
-
 ## Usage
 
 ```python
