@@ -2,6 +2,10 @@
 
 SpaCy component for scattered phrase matching.
 
+1. You have documents such as `In a hole in the ground there lived a Hobbit.`
+1. You want to match patterns like `in holes live hobbits`
+1. Then you need this spaCy component!
+
 
 ## Installation
 
@@ -14,7 +18,14 @@ pip install scaphra
 
 ## Usage
 
-See `scaphra/example.py` for an example application.
+```python
+phrasemap = {'hobbits': ['in', 'holes', 'live', 'hobbits']}
+nlp.add_pipe("scaphra", config=dict(phrasemap=phrasemap))
+doc = nlp("In a hole in the ground there lived a Hobbit")
+# now doc.spans contains a SpanGroup with the matched tokens
+```
+
+See `scaphra/example.py` for multiple, full examples.
 
 The matcher is a single SpaCy component which matches scattered
 phrases both using their lemmas and stems. This is important when the
