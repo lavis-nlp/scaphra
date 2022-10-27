@@ -192,14 +192,18 @@ class Scaphra:
         log.info(f"created {len(self.patternmap)} patterns")
 
     def _match_retain(self, doc, pos: int, part: Partial) -> bool:
-        if self.max_space is not None and pos - part.positions[-1] >= self.max_space:
+        def violated(lower, upper):
+            assert lower <= upper
+            return self.max_space is not None and upper - lower > self.max_space
+
+        if violated(part.positions[-1], pos):
             return False
 
         if len(part.positions) > 1:
             lower, upper = part.positions[-2:]
 
             # remove partial matches that exceeded the maximum token span
-            if self.max_space is not None and upper - lower >= self.max_space:
+            if violated(lower, upper):
                 return False
 
             # remove partial matches that have undesired content in between
