@@ -192,7 +192,7 @@ class Scaphra:
         log.info(f"created {len(self.patternmap)} patterns")
 
     def _match_retain(self, doc, pos: int, part: Partial) -> bool:
-        if self.max_space is not None and pos + part.positions[-1] >= self.max_space:
+        if self.max_space is not None and pos - part.positions[-1] >= self.max_space:
             return False
 
         if len(part.positions) > 1:
