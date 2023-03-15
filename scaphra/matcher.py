@@ -98,8 +98,6 @@ HOMAG_MATCHER = "homag_matcher"
 class Scaphra:
     """Scattered Phrase Matcher.
 
-    TODO long description
-
     Approach
     --------
 
