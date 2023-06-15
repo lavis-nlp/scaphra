@@ -92,7 +92,6 @@ def _re_compile_between():
 
 
 RE_BETWEEN = _re_compile_between()
-HOMAG_MATCHER = "homag_matcher"
 
 
 class Scaphra:
